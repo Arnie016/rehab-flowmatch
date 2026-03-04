@@ -55,4 +55,7 @@ jobs:
             exit 0
           fi
           git commit -m "Sync ${GITHUB_SHA}"
-          git push origin master
+          target_branch="$(git rev-parse --abbrev-ref HEAD)"
+          echo "Pushing to Overleaf branch: ${target_branch}"
+          git pull --rebase origin "${target_branch}"
+          git push origin "HEAD:${target_branch}"
