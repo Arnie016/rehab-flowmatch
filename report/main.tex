@@ -33,4 +33,42 @@ Low reconstruction loss alone is not enough for rehabilitation use. A model can 
   \item Evaluate whether hybrid neuromorphic extensions can reduce compute cost without compromising motion safety.
 \end{itemize}
 
+\section{Technical Framing for Hybrid ANN--SNN Rehab Motion Generation}
+Diffusion, score-based models, and flow-field generative models all provide iterative denoising mechanisms for trajectory generation. For this project, the practical framing is to learn a time-conditioned transport field for motion states, then enforce safety and biomechanical constraints during sampling. In this setting, flow matching and rectified-flow style formulations are attractive because they can reduce sampling cost while preserving high-quality generation.
+
+Hybrid ANN--SNN design is introduced as a systems-level extension rather than a direct replacement of the core model. The ANN path provides stable continuous-valued prediction where precision is critical, while SNN blocks can exploit temporal sparsity for lower-power feature extraction and adaptation. A bridge module between spiking and dense representations is treated as mandatory for reliable deployment.
+
+\section{High-Value Research Questions}
+\begin{enumerate}
+  \item Can a hybrid ANN--SNN flow field match ANN trajectory quality while reducing latency and energy?
+  \item Which layers should remain ANN versus SNN to preserve reverse-sampling stability?
+  \item Which constraint strategy is best in hybrid generators: soft penalties, hard projection, or staged combinations?
+  \item What tradeoff appears between spike sparsity and trajectory smoothness (especially jerk profiles)?
+  \item Does three-factor STDP, using global modulation from residual or constraint violation, improve patient-specific adaptation?
+  \item Does STDP adaptation improve robustness under IMU drift and dropout without full retraining?
+  \item How does eventized IMU input compare with dense IMU input for both error and safety metrics?
+  \item Does quantization plus hybrid spiking inference preserve kinematic validity, not only RMSE?
+  \item Can sampling-time uncertainty flag unsafe trajectories early enough for fallback control?
+  \item What edge-cloud deployment split (edge SNN safety filter plus cloud ANN generator) gives the best real-time feedback performance?
+\end{enumerate}
+
+\section{Experimental Priorities}
+\subsection*{Priority A: Safety-First Baseline}
+First, establish a strong ANN physics-constrained flow-matching baseline with grouped patient splits and explicit safety metrics: trajectory RMSE, joint-limit violations, and jerk-based smoothness. This is the anchor for all hybrid comparisons.
+
+\subsection*{Priority B: Hybrid Partition Study}
+Evaluate several ANN--SNN partitions (early, middle, and late SNN blocks) while keeping the time embedding and output head dense. Compare quality, stability, latency, and energy proxies at matched solver settings.
+
+\subsection*{Priority C: Online Adaptation}
+Test bounded STDP adaptation in a small adaptor subnetwork under realistic sensor corruption (bias random walk, dropout windows). Report gains and any safety regressions.
+
+\subsection*{Priority D: Deployment Path}
+Prototype an edge-cloud split: edge model performs eventization and safety screening; cloud model handles heavier long-horizon generation and clinician analytics. Measure end-to-end loop latency and fallback reliability.
+
+\section{Working Hypothesis}
+The most likely high-impact architecture is a constrained flow-matching backbone with selective hybridization: ANN for stability-critical components, SNN for sparse temporal feature handling, and limited online STDP adaptation for patient and sensor drift personalization. The target outcome is not just lower error, but safer and faster rehabilitation feedback under real-world sensing noise.
+
+\section*{Citation Note}
+This draft section consolidates the current literature scan. Formal BibTeX references should be added next in Overleaf for submission-ready formatting.
+
 \end{document}
