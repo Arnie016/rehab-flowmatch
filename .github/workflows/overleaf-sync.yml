@@ -40,7 +40,7 @@ jobs:
 
       - name: Sync report files into Overleaf clone
         run: |
-          rsync -av --delete report/ .overleaf/
+          rsync -av --delete --exclude='.git/' report/ .overleaf/
 
       - name: Commit and push to Overleaf
         env:
