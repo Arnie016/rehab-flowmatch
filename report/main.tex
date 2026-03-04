@@ -1,0 +1,36 @@
+\documentclass[11pt]{article}
+
+\usepackage[a4paper,margin=1in]{geometry}
+\usepackage[T1]{fontenc}
+\usepackage[utf8]{inputenc}
+\usepackage{lmodern}
+\usepackage{hyperref}
+
+\title{Rehab-FlowMatch: Physics-Constrained Flow Matching for Rehabilitation Motion Trajectories}
+\author{Arnav Salkade}
+\date{\today}
+
+\begin{document}
+\maketitle
+
+\begin{abstract}
+Rehab-FlowMatch is a framework for denoising and generating physiotherapy motion trajectories from wearable IMU signals using physics-constrained flow matching. The model learns a time-conditioned velocity field that maps noisy trajectories to clean trajectories through reverse integration. To improve clinical plausibility, the objective combines flow-matching regression with biomechanical regularization, including smoothness and kinematic-bound penalties. Evaluation emphasizes not only reconstruction error but also safety indicators such as constraint-violation rate and temporal stability. A secondary track explores hybrid spiking and neuromorphic extensions, including local STDP-style adaptation for low-power on-device deployment.
+\end{abstract}
+
+\section{Introduction}
+Stroke and musculoskeletal rehabilitation require frequent, consistent movement practice beyond supervised clinical sessions. In home settings, patients often receive limited feedback, and wearable sensors introduce noise, drift, and missing data. This creates a central challenge: how to recover physically valid trajectories from imperfect measurements while maintaining reliability for safety-critical feedback.
+
+Generative trajectory correction methods are promising because they model denoising as a continuous process instead of a single-step mapping. In this project, we use flow matching as the core formulation. Given a noisy trajectory state and a time variable, the model predicts a velocity field that guides the state toward a clean trajectory. This design supports controllable reverse integration and allows constraints to be incorporated during both training and sampling.
+
+Low reconstruction loss alone is not enough for rehabilitation use. A model can score well numerically while producing implausible jerk spikes, unstable timing, or joint-limit violations. Therefore, Rehab-FlowMatch explicitly targets safety-relevant physical validity alongside denoising quality. The project objective is to build a reproducible pipeline that generalizes across patients and exercises while preserving biomechanical realism.
+
+\subsection*{Project Objectives}
+\begin{itemize}
+  \item Learn a stable time-conditioned velocity field for rehabilitation trajectory denoising.
+  \item Enforce kinematic plausibility through smoothness and constraint-aware objectives.
+  \item Benchmark quality-safety tradeoffs using trajectory and constraint metrics.
+  \item Establish reproducible dataset and integrity checks for reliable experimentation.
+  \item Evaluate whether hybrid neuromorphic extensions can reduce compute cost without compromising motion safety.
+\end{itemize}
+
+\end{document}
