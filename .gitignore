@@ -1,0 +1,15 @@
+# Python
+__pycache__/
+*.py[cod]
+.venv/
+venv/
+
+# Data artifacts
+data/strokerehab/
+!data/strokerehab/.gitkeep
+data/manifests/*.json
+!data/manifests/.gitkeep
+
+# macOS
+.DS_Store
+

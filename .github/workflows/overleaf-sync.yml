@@ -1,0 +1,55 @@
+name: Sync Report To Overleaf
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - "report/**"
+      - ".github/workflows/overleaf-sync.yml"
+  workflow_dispatch:
+
+jobs:
+  sync:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Validate required secrets
+        env:
+          OVERLEAF_PROJECT_ID: ${{ secrets.OVERLEAF_PROJECT_ID }}
+          OVERLEAF_GIT_TOKEN: ${{ secrets.OVERLEAF_GIT_TOKEN }}
+        run: |
+          if [ -z "${OVERLEAF_PROJECT_ID}" ]; then
+            echo "Missing secret: OVERLEAF_PROJECT_ID"
+            exit 1
+          fi
+          if [ -z "${OVERLEAF_GIT_TOKEN}" ]; then
+            echo "Missing secret: OVERLEAF_GIT_TOKEN"
+            exit 1
+          fi
+
+      - name: Prepare report tree
+        run: |
+          mkdir -p .overleaf
+          rsync -av --delete report/ .overleaf/
+
+      - name: Commit and push to Overleaf
+        env:
+          OVERLEAF_PROJECT_ID: ${{ secrets.OVERLEAF_PROJECT_ID }}
+          OVERLEAF_GIT_TOKEN: ${{ secrets.OVERLEAF_GIT_TOKEN }}
+          GITHUB_SHA: ${{ github.sha }}
+        run: |
+          cd .overleaf
+          git init
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add -A
+          git commit -m "Sync ${GITHUB_SHA}" || echo "No local changes to commit"
+          git remote add overleaf "https://git:${OVERLEAF_GIT_TOKEN}@git.overleaf.com/${OVERLEAF_PROJECT_ID}"
+          git fetch overleaf master || true
+          git pull --rebase overleaf master || true
+          git push overleaf HEAD:master
+
