@@ -31,25 +31,28 @@ jobs:
             exit 1
           fi
 
-      - name: Prepare report tree
+      - name: Clone Overleaf project
+        env:
+          OVERLEAF_PROJECT_ID: ${{ secrets.OVERLEAF_PROJECT_ID }}
+          OVERLEAF_GIT_TOKEN: ${{ secrets.OVERLEAF_GIT_TOKEN }}
         run: |
-          mkdir -p .overleaf
+          git clone "https://git:${OVERLEAF_GIT_TOKEN}@git.overleaf.com/${OVERLEAF_PROJECT_ID}" .overleaf
+
+      - name: Sync report files into Overleaf clone
+        run: |
           rsync -av --delete report/ .overleaf/
 
       - name: Commit and push to Overleaf
         env:
-          OVERLEAF_PROJECT_ID: ${{ secrets.OVERLEAF_PROJECT_ID }}
-          OVERLEAF_GIT_TOKEN: ${{ secrets.OVERLEAF_GIT_TOKEN }}
           GITHUB_SHA: ${{ github.sha }}
         run: |
           cd .overleaf
-          git init
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
           git add -A
-          git commit -m "Sync ${GITHUB_SHA}" || echo "No local changes to commit"
-          git remote add overleaf "https://git:${OVERLEAF_GIT_TOKEN}@git.overleaf.com/${OVERLEAF_PROJECT_ID}"
-          git fetch overleaf master || true
-          git pull --rebase overleaf master || true
-          git push overleaf HEAD:master
-
+          if git diff --cached --quiet; then
+            echo "No changes to sync"
+            exit 0
+          fi
+          git commit -m "Sync ${GITHUB_SHA}"
+          git push origin master
