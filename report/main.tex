@@ -33,6 +33,26 @@ Low reconstruction loss alone is not enough for rehabilitation use. A model can 
   \item Evaluate whether hybrid neuromorphic extensions can reduce compute cost without compromising motion safety.
 \end{itemize}
 
+\section{Current Project Status}
+\subsection*{Status as of April 3, 2026}
+The engineering path is now materially de-risked. A runnable training repository has been established, the processed StrokeRehab dataset is linked into the project tree, and dataset integrity checks pass against the stored manifest. On Apple silicon, the PyTorch environment reports working MPS support, and the \texttt{hybrid\_mic\_flow} training entrypoint resolves correctly against the real-data configuration.
+
+The long-running real-data \texttt{hybrid\_mic\_flow} experiment in \texttt{experiments/hybrid\_mic\_flow\_mps\_fullpower} resumed successfully from the saved \texttt{best.pt} checkpoint and is still training on MPS. The current best checkpoint is from epoch 35 with validation masked RMSE 0.3339. The live run has since advanced through epoch 37 and is currently past step 15100 of 15585 in that epoch.
+
+The latest completed validation pass at epoch 36 reported train loss 0.9900, masked RMSE 0.3399, frame accuracy 0.2680, and macro F1 0.0318. That means the run is no longer in setup territory; the active question is now whether additional epochs can improve the current best checkpoint without destabilizing the restoration metrics.
+
+\subsection*{Progress Summary}
+\begin{itemize}
+  \item The repo is wired for real-data StrokeRehab training with grouped subject splits, corruption handling, and checkpointed evaluation.
+  \item The processed dataset is linked into \texttt{data/strokerehab} and the training stack runs against the real-data config.
+  \item The Apple-silicon environment has been verified with native MPS support.
+  \item The hybrid MPS experiment resumed from \texttt{experiments/hybrid\_mic\_flow\_mps\_fullpower/best.pt} without import, path, or device failures.
+  \item The best saved checkpoint currently corresponds to epoch 35 and validation masked RMSE 0.3339.
+  \item The live training run is still active and currently sits in epoch 37, beyond step 15100 of 15585.
+\end{itemize}
+
+At this stage, the strongest practical next step is to let the current run reach the next validation cycle and compare it against the present best checkpoint. If the new validation metrics continue to improve, the report can shift from a progress update to an experiment-results summary.
+
 \section{Technical Framing for Hybrid ANN--SNN Rehab Motion Generation}
 Diffusion, score-based models, and flow-field generative models all provide iterative denoising mechanisms for trajectory generation. For this project, the practical framing is to learn a time-conditioned transport field for motion states, then enforce safety and biomechanical constraints during sampling. In this setting, flow matching and rectified-flow style formulations are attractive because they can reduce sampling cost while preserving high-quality generation.
 
