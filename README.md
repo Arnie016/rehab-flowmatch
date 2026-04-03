@@ -11,12 +11,17 @@ Physics-constrained flow matching for rehabilitation motion trajectory denoising
 
 ## Current structure
 
+- `core/`: Flow matching logic (ODE loss, Euler sampler)
+- `models/`: Temporal U-Net backbone + Hybrid ANN-SNN architecture
+- `data/`: StrokeRehab dataset loader with corruption integration
+- `utils/`: Corruption benchmark simulator, metrics
+- `scripts/`: Training scripts (MPS + parallel workers)
+- `configs/`: YAML configuration files
+- `docs/`: Report drafts (Methods section)
 - `tools/make_manifest.py`: create dataset manifest with file sizes and SHA-256 hashes.
 - `tools/dataset_healthcheck.py`: fail-loud integrity check against manifest.
 - `scripts/redownload_and_verify.sh`: safe download + archive verification + extraction helper.
 - `.github/workflows/overleaf-sync.yml`: sync `report/` folder to Overleaf using token-based auth.
-- `data/manifests/`: place dataset manifests here.
-- `data/strokerehab/`: expected dataset root.
 
 ## Dataset workflow (recommended)
 

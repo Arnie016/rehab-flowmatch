@@ -1,15 +1,35 @@
 # Python
 __pycache__/
 *.py[cod]
+*.pyc
+*.pyo
+*.egg-info/
+dist/
+build/
+*.egg
 .venv/
 venv/
+.env
 
 # Data artifacts
 data/strokerehab/
 !data/strokerehab/.gitkeep
 data/manifests/*.json
 !data/manifests/.gitkeep
+data/raw/
+data/processed/
+*.npz
 
-# macOS
+# Experiments & Checkpoints
+experiments/
+*.pt
+*.pth
+*.ckpt
+
+# OS
 .DS_Store
+Thumbs.db
 
+# IDE
+.vscode/
+.idea/
